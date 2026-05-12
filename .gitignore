@@ -1,0 +1,58 @@
+# Node-RED specific
+.node-red/*.backup
+.node-red/*.log
+.node-red-enron-modbus-server/
+flows*.json
+flows*.backup
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and Editor
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+
+# Devcontainer runtime data
+.devcontainer/.runtime/
+.devcontainer/data/node-red-userdir/*
+!.devcontainer/data/node-red-userdir/.gitkeep
+
+# Logs
+npm-debug.log*
+*.log
+logs/
+
+# Cache and build artifacts
+.eslintcache
+.nyc_output/
+coverage/
+dist/
+build/
+
+# Process files
+*.pid
+
+# npm
+.npm/
+.npmrc.local
+
+# Temporary files
+*.tgz
+*.tmp
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db

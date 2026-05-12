@@ -1,0 +1,48 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Node-RED: Auto Reload (Nodemon)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev:nodered",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Node-RED: Attach (9229)",
+      "type": "pwa-node",
+      "request": "attach",
+      "address": "127.0.0.1",
+      "port": 9229,
+      "restart": true,
+      "cwd": "${workspaceFolder}",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "name": "Node-RED: Launch (DevContainer)",
+      "type": "pwa-node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "--inspect=0.0.0.0:9229"
+      ],
+      "program": "${workspaceFolder}/.node-red/node_modules/node-red/red.js",
+      "args": [
+        "--userDir",
+        "${workspaceFolder}/.node-red",
+        "--port",
+        "1880"
+      ],
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
+}

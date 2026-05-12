@@ -1,0 +1,7 @@
+{
+  "watch": ["nodes", "package.json"],
+  "ext": "js,html,json",
+  "ignore": [".node-red/**", "node_modules/**", ".node-red"],
+  "signal": "SIGTERM",
+  "exec": "node --inspect=0.0.0.0:9229 node_modules/node-red/red.js --userDir ${NR_USER_DIR:-$HOME/.node-red-enron-modbus-server} --port 1880"
+}

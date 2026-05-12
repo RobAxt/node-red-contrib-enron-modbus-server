@@ -1,0 +1,38 @@
+# Development and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local runtime and dependencies
+.node-red/
+.node-red-enron-modbus-server/
+node_modules/
+
+# Dev container and local tooling
+.devcontainer/
+nodemon.json
+
+# Build/log/temp artifacts
+coverage/
+dist/
+build/
+logs/
+*.log
+npm-debug.log*
+*.tgz
+*.tmp
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db

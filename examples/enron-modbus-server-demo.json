@@ -1,0 +1,99 @@
+[
+  {
+    "id": "a5c597be92400101",
+    "type": "tab",
+    "label": "Enron Modbus Server Demo",
+    "disabled": false,
+    "info": "Demo de servidor Modbus TCP estilo Enron para FC3 en rango 7000."
+  },
+  {
+    "id": "89389938a838a15e",
+    "type": "enron-modbus-server",
+    "z": "a5c597be92400101",
+    "name": "Enron FC3 Server",
+    "host": "0.0.0.0",
+    "port": "1502",
+    "minAddress": "7000",
+    "maxAddress": "7999",
+    "maxQuantity": "60",
+    "defaultType": "float32",
+    "defaultByteOrder": "ABCD",
+    "missingRegister": "exception",
+    "emitEvents": true,
+    "dataJson": "{\n  \"defaults\": {\n    \"type\": \"float32\",\n    \"byteOrder\": \"ABCD\",\n    \"missingRegister\": \"exception\"\n  },\n  \"registers\": {\n    \"7001\": { \"value\": 12.34, \"type\": \"float32\", \"unit\": \"bar\" },\n    \"7002\": { \"value\": 56.78, \"type\": \"float32\", \"unit\": \"degC\" },\n    \"7021\": { \"value\": 60500.0, \"type\": \"float32\", \"unit\": \"m3\" }\n  },\n  \"unitIds\": {\n    \"17\": {\n      \"registers\": {\n        \"7021\": { \"value\": 60500.0, \"type\": \"float32\" }\n      }\n    }\n  },\n  \"remotes\": {\n    \"192.168.3.100\": {\n      \"unitIds\": {\n        \"17\": {\n          \"registers\": {\n            \"7021\": { \"value\": 333.44, \"type\": \"float32\" }\n          }\n        }\n      },\n      \"registers\": {\n        \"7001\": { \"value\": 1.11, \"type\": \"float32\" }\n      }\n    }\n  }\n}",
+    "x": 570,
+    "y": 160,
+    "wires": [
+      [
+        "301553474ed03278"
+      ]
+    ]
+  },
+  {
+    "id": "301553474ed03278",
+    "type": "debug",
+    "z": "a5c597be92400101",
+    "name": "server events",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 810,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "f960c9705fd816a0",
+    "type": "inject",
+    "z": "a5c597be92400101",
+    "name": "set 7021 for 192.168.3.100 / unit 17",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"action\":\"setValue\",\"remote\":\"192.168.3.100\",\"unitId\":17,\"address\":7021,\"value\":44.55,\"type\":\"float32\"}",
+    "payloadType": "json",
+    "x": 260,
+    "y": 220,
+    "wires": [
+      [
+        "89389938a838a15e"
+      ]
+    ]
+  },
+  {
+    "id": "dd0f4a9d21a4d3a7",
+    "type": "inject",
+    "z": "a5c597be92400101",
+    "name": "set global 7001",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"action\":\"setValue\",\"address\":7001,\"value\":99.99,\"type\":\"float32\"}",
+    "payloadType": "json",
+    "x": 160,
+    "y": 280,
+    "wires": [
+      [
+        "89389938a838a15e"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "name": "@axt/node-red-contrib-enron-modbus-server",
+  "version": "0.1.0",
+  "description": "Node-RED palette node that exposes an Enron/Daniels-style Modbus TCP server for FC3 numeric registers in the 7000 range.",
+  "keywords": [
+    "node-red",
+    "modbus",
+    "modbus-tcp",
+    "enron-modbus",
+    "daniels-modbus",
+    "scada",
+    "iot"
+  ],
+  "license": "MIT",
+  "author": "Roberto Axt",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RobAxt/node-red-contrib-enron-modbus-server.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "node-red": {
+    "version": ">=3.1.0",
+    "nodes": {
+      "enron-modbus-server": "nodes/enron-modbus-server.js"
+    }
+  },
+  "scripts": {
+    "pack:local": "npm pack",
+    "test:client": "node test/client-read-fc3.js",
+    "test:client:fc1": "node test/client-read-fc1.js",
+    "dev:nodered": "nodemon"
+  },
+  "devDependencies": {
+    "node-red": "^3.1.0",
+    "nodemon": "^3.1.10"
+  },
+  "main": "nodes/enron-modbus-server.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  }
+}

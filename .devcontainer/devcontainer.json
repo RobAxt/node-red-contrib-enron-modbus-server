@@ -1,0 +1,46 @@
+{
+  "name": "enron-modbus-server-dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "containerEnv": {
+    "NR_USER_DIR": "/home/node/.node-red-enron-modbus-server"
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/.devcontainer/data/node-red-userdir,target=/home/node/.node-red-enron-modbus-server,type=bind"
+  ],
+  "runArgs": [
+    "-p",
+    "1502:1502",
+    "-p",
+    "1880:1880",
+    "-p",
+    "9229:9229"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.vscode-json"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "forwardPorts": [1880, 1502, 9229],
+  "portsAttributes": {
+    "1880": {
+      "label": "Node-RED UI"
+    },
+    "1502": {
+      "label": "Modbus TCP"
+    },
+    "9229": {
+      "label": "Node Inspector"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+  "postStartCommand": "bash .devcontainer/postStart.sh",
+  "remoteUser": "node"
+}

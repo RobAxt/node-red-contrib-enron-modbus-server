@@ -1,0 +1,412 @@
+<script type="text/javascript">
+(function() {
+    function validateJson(v) {
+        if (!v || !v.trim()) return true;
+        try {
+            JSON.parse(v);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+
+    RED.nodes.registerType('enron-modbus-server', {
+        category: 'network',
+        color: '#D8BFD8',
+        defaults: {
+            name: { value: '' },
+            host: { value: '0.0.0.0', required: true },
+            port: { value: 502, required: true, validate: RED.validators.number() },
+            minAddress: { value: 7000, required: true, validate: RED.validators.number() },
+            maxAddress: { value: 7999, required: true, validate: RED.validators.number() },
+            maxQuantity: { value: 60, required: true, validate: RED.validators.number() },
+            minCoilAddress: { value: 1000, required: true, validate: RED.validators.number() },
+            maxCoilAddress: { value: 1999, required: true, validate: RED.validators.number() },
+            maxCoilQuantity: { value: 2000, required: true, validate: RED.validators.number() },
+            defaultType: { value: 'float32' },
+            defaultByteOrder: { value: 'ABCD' },
+            missingRegister: { value: 'exception' },
+            groupTimeoutMinutes: { value: 0, validate: RED.validators.number() },
+            emitEvents: { value: true },
+            dataJson: { value: '{}', type: 'hidden' },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'font-awesome/fa-exchange',
+        paletteLabel: 'enron modbus server',
+        label: function() {
+            return this.name || 'enron modbus server';
+        },
+        oneditprepare: function() {
+            var nodeId = this.id;
+            var $div = $('#display-dataJson');
+            $div.css({
+                'font-family': 'monospace',
+                'font-size': '12px',
+                'min-height': '360px',
+                'background-color': '#f5f5f5',
+                'color': '#333',
+                'padding': '8px',
+                'border': '1px solid #ccc',
+                'border-radius': '3px',
+                'overflow-y': 'auto'
+            });
+
+            function fetchModel() {
+                $div.text('Cargando...');
+                $.getJSON('/enron-modbus-server/' + nodeId + '/model')
+                    .done(function(data) {
+                        $div.text(JSON.stringify(data, null, 2));
+                    })
+                    .fail(function() {
+                        $div.text('(nodo no activo o aún no desplegado)');
+                    });
+            }
+
+            $('#node-input-dataJson-refresh').on('click', fetchModel);
+            fetchModel();
+        }
+    });
+})();
+</script>
+
+<script type="text/html" data-template-name="enron-modbus-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Enron Modbus Server">
+    </div>
+
+    <div class="form-row" style="margin-top:12px; margin-bottom:4px;">
+        <label style="width:100%; font-weight:bold; color:#555; border-bottom:1px solid #ccc; padding-bottom:4px;">
+            <i class="fa fa-plug"></i> Conexión TCP
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-host"><i class="fa fa-globe"></i> Listen host</label>
+        <input type="text" id="node-input-host" placeholder="0.0.0.0">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-port"><i class="fa fa-plug"></i> Port</label>
+        <input type="number" id="node-input-port" placeholder="502">
+    </div>
+
+    <div class="form-row" style="margin-top:12px; margin-bottom:4px;">
+        <label style="width:100%; font-weight:bold; color:#555; border-bottom:1px solid #ccc; padding-bottom:4px;">
+            <i class="fa fa-database"></i> FC3 — Registros 32-bit
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-minAddress"><i class="fa fa-arrow-right"></i> Min address</label>
+        <input type="number" id="node-input-minAddress" placeholder="7000">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-maxAddress"><i class="fa fa-arrow-left"></i> Max address</label>
+        <input type="number" id="node-input-maxAddress" placeholder="7999">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-maxQuantity"><i class="fa fa-list"></i> Max quantity</label>
+        <input type="number" id="node-input-maxQuantity" placeholder="60">
+    </div>
+
+    <div class="form-row" style="margin-top:12px; margin-bottom:4px;">
+        <label style="width:100%; font-weight:bold; color:#555; border-bottom:1px solid #ccc; padding-bottom:4px;">
+            <i class="fa fa-toggle-on"></i> FC1 — Coils digitales
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-minCoilAddress"><i class="fa fa-arrow-right"></i> Min coil address</label>
+        <input type="number" id="node-input-minCoilAddress" placeholder="1000">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-maxCoilAddress"><i class="fa fa-arrow-left"></i> Max coil address</label>
+        <input type="number" id="node-input-maxCoilAddress" placeholder="1999">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-maxCoilQuantity"><i class="fa fa-list"></i> Max coil quantity</label>
+        <input type="number" id="node-input-maxCoilQuantity" placeholder="2000">
+    </div>
+
+    <div class="form-row" style="margin-top:12px; margin-bottom:4px;">
+        <label style="width:100%; font-weight:bold; color:#555; border-bottom:1px solid #ccc; padding-bottom:4px;">
+            <i class="fa fa-cogs"></i> Valores por defecto
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-defaultType"><i class="fa fa-cube"></i> Default type</label>
+        <select id="node-input-defaultType" style="width:70%">
+            <option value="float32">float32</option>
+            <option value="int32">int32</option>
+            <option value="uint32">uint32</option>
+            <option value="hex32">hex32/raw32</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-defaultByteOrder"><i class="fa fa-sort"></i> Byte order</label>
+        <select id="node-input-defaultByteOrder" style="width:70%">
+            <option value="ABCD">ABCD - big endian</option>
+            <option value="CDAB">CDAB - word swap</option>
+            <option value="BADC">BADC - byte swap per word</option>
+            <option value="DCBA">DCBA - full reverse</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-missingRegister"><i class="fa fa-warning"></i> Missing register</label>
+        <select id="node-input-missingRegister" style="width:70%">
+            <option value="exception">Exception 02 - Illegal Data Address</option>
+            <option value="zero">Return 0.0</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+      <label for="node-input-groupTimeoutMinutes"><i class="fa fa-clock-o"></i> Group timeout (min)</label>
+      <input type="number" id="node-input-groupTimeoutMinutes" min="0" step="1" placeholder="0">
+      <span style="margin-left:8px; color:#666;">0 disables automatic cleanup</span>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-emitEvents"><i class="fa fa-bell"></i> Emit events</label>
+        <input type="checkbox" id="node-input-emitEvents" style="display:inline-block; width:auto; vertical-align:top;">
+        <span>Send request/response/exception messages to output</span>
+    </div>
+
+    <div class="form-row" style="margin-top:12px; margin-bottom:4px;">
+        <label style="width:100%; font-weight:bold; color:#555; border-bottom:1px solid #ccc; padding-bottom:4px;">
+            <i class="fa fa-eye"></i> Modelo activo (solo lectura)
+            <button type="button" id="node-input-dataJson-refresh"
+                style="float:right; margin-right:30%; font-size:11px; padding:1px 8px;">
+                <i class="fa fa-refresh"></i> Actualizar
+            </button>
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label for="display-dataJson" style="vertical-align:top; margin-top:4px;"><i class="fa fa-code"></i> Configuración </label>
+        <pre id="display-dataJson" style="width:70%; height:360px; overflow:auto; white-space:pre-wrap; word-wrap:break-word;"></pre>
+        <input type="hidden" id="node-input-dataJson">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="enron-modbus-server">
+    <p>Servidor Modbus TCP estilo Enron/Daniels para lecturas <strong>FC3</strong> (registros 32-bit, rango 7000-7999) y <strong>FC1</strong> (coils digitales, rango 1000-1999).</p>
+
+    <h3>Comportamiento</h3>
+    <p><strong>FC3:</strong> Cada dirección lógica responde 4 bytes. Quantity 1 = byte count 04; Quantity 3 = byte count 12.</p>
+    <p><strong>FC1:</strong> Direcciones digitales en rango fijo 1000-1999, empaquetadas como bits según Modbus (1 byte = 8 coils).</p>
+
+    <h3>Prioridad de búsqueda</h3>
+    <p>Para cualquier dirección (FC1 o FC3), la búsqueda sigue este orden:</p>
+    <ol>
+        <li><code>remotes[IP/CIDR].unitIds[unitId].(registers|coils)[address]</code></li>
+        <li><code>remotes[IP/CIDR].(registers|coils)[address]</code></li>
+        <li><code>unitIds[unitId].(registers|coils)[address]</code></li>
+        <li><code>(registers|coils)[address]</code> (global)</li>
+    </ol>
+
+    <h3>Caducidad de grupos</h3>
+    <p>Si activas <strong>Group timeout (min)</strong>, cualquier grupo lógico que no reciba actualizaciones durante ese tiempo se borra de la configuración. El borrado aplica al contenedor completo: global, Unit ID, IP o IP + Unit ID.</p>
+
+    <h3>Evento de expiración</h3>
+    <p>Cuando un grupo expira, el nodo emite un mensaje con <code>topic = enron-modbus/group_expired</code> y <code>payload.event = group_expired</code>. El payload incluye <code>scope</code> y las claves afectadas.</p>
+
+    <h3>Estructura del JSON de datos</h3>
+    <pre>{
+  "defaults": {
+    "type": "float32",
+    "byteOrder": "ABCD",
+    "missingRegister": "exception"
+  },
+  "coils": {
+    "1000": { "value": true },
+    "1001": { "value": false },
+    "1002": { "value": true }
+  },
+  "registers": {
+    "7000": { "value": 10.5, "type": "float32" },
+    "7001": { "value": 20.5, "type": "float32" },
+    "7021": { "value": 60500.0, "type": "float32", "unit": "m3" }
+  },
+  "unitIds": {
+    "200": {
+      "coils": {
+        "1000": { "value": true }
+      },
+      "registers": {
+        "7000": { "value": 100.5, "type": "float32" }
+      }
+    }
+  },
+  "remotes": {
+    "*": {
+      "unitIds": {
+        "200": {
+          "coils": {
+            "1000": { "value": true },
+            "1001": { "value": false }
+          },
+          "registers": {
+            "7000": { "value": 10.5, "type": "float32" },
+            "7001": { "value": 20.5, "type": "float32" }
+          }
+        }
+      }
+    },
+    "192.168.3.100": {
+      "registers": {
+        "7021": { "value": 333.44, "type": "float32" }
+      }
+    },
+    "192.168.3.0/24": {
+      "registers": {
+        "7002": { "value": 22.22, "type": "float32" }
+      }
+    }
+  }
+}</pre>
+
+    <h3>Tipos de datos soportados</h3>
+    <ul>
+        <li><code>float32</code> (default)</li>
+        <li><code>int32</code></li>
+        <li><code>uint32</code></li>
+        <li><code>hex32</code> / <code>raw32</code></li>
+    </ul>
+
+    <h3>Órdenes de bytes soportados</h3>
+    <ul>
+        <li><code>ABCD</code> (big-endian, default)</li>
+        <li><code>CDAB</code> (word swap)</li>
+        <li><code>BADC</code> (byte swap per word)</li>
+        <li><code>DCBA</code> (full reverse)</li>
+    </ul>
+
+    <h3>Actualización dinámica con Inject</h3>
+    <p>El nodo acepta dos formatos de entrada:</p>
+
+    <h4>1. Reemplazar modelo completo</h4>
+    <p>Envía el JSON completo sin action en msg.payload:</p>
+    <pre>{
+  "defaults": {
+    "type": "float32",
+    "byteOrder": "ABCD"
+  },
+  "remotes": {
+    "*": {
+      "unitIds": {
+        "200": {
+          "registers": {
+            "7000": { "value": 10.5, "type": "float32" }
+          },
+          "coils": {
+            "1000": { "value": true }
+          }
+        }
+      }
+    }
+  }
+}</pre>
+
+    <h4>2. Actualizar un único registro (setValue)</h4>
+    <p>Envía en msg.payload con action y los datos a actualizar:</p>
+    <pre>{
+  "action": "setValue",
+  "remote": "*",
+  "unitId": 200,
+  "address": 7000,
+  "value": 100.5,
+  "type": "float32"
+}</pre>
+
+    <p>Ejemplo para coils digitales:</p>
+    <pre>{
+  "action": "setValue",
+  "remote": "*",
+  "unitId": 200,
+  "address": 1000,
+  "value": true,
+  "pointType": "coil"
+}</pre>
+
+    <h4>3. Borrar nodo lógico o dirección (deleteNode)</h4>
+    <p>Envía en msg.payload con action y las claves del objetivo a borrar.</p>
+    <pre>{
+  "action": "deleteNode",
+  "remote": "*",
+  "unitId": 200
+}</pre>
+
+    <p>Ejemplo para borrar una dirección puntual de coil:</p>
+    <pre>{
+  "action": "deleteNode",
+  "remote": "*",
+  "unitId": 200,
+  "address": 1000,
+  "pointType": "coil"
+}</pre>
+
+    <p><strong>Nota:</strong> En un nodo Inject con tipo JSON, todo va a <code>msg.payload</code>, así que la estructura anterior es lo que envías directamente.</p>
+
+    <h3>Parámetros de setValue</h3>
+    <ul>
+        <li><code>action</code>: Debe ser <code>"setValue"</code></li>
+        <li><code>remote</code>: IP/CIDR o <code>"*"</code> para cualquier IP</li>
+        <li><code>unitId</code>: ID de unidad Modbus (0-255)</li>
+        <li><code>address</code>: Dirección (1000-1999 para coils, 7000-7999 para registers)</li>
+        <li><code>value</code>: Valor (boolean para coils, número para registers)</li>
+        <li><code>type</code>: <code>float32</code>, <code>int32</code>, <code>uint32</code>, <code>hex32</code> (para registers)</li>
+        <li><code>pointType</code>: <code>"coil"</code> (opcional, se infiere del rango de address)</li>
+    </ul>
+
+      <h3>Parámetros de deleteNode</h3>
+      <ul>
+        <li><code>action</code>: Debe ser <code>"deleteNode"</code></li>
+        <li><code>remote</code>: Borra dentro de ese remote; sin otros campos borra todo el remote.</li>
+        <li><code>unitId</code>: Borra dentro de ese unitId; sin address borra el unitId completo.</li>
+        <li><code>address</code>: Borra una dirección puntual (register o coil según <code>pointType</code> o rango).</li>
+        <li><code>pointType</code>: <code>"coil"</code> para forzar borrado en coils (opcional).</li>
+      </ul>
+
+      <p>Combinaciones soportadas en <code>deleteNode</code>:</p>
+      <ul>
+        <li><code>remote + unitId + address</code>: una dirección en <code>remotes[remote].unitIds[unitId]</code>.</li>
+        <li><code>remote + unitId</code>: unitId completo dentro del remote.</li>
+        <li><code>remote + address</code>: una dirección en el nivel remote (sin unitId).</li>
+        <li><code>remote</code>: remote completo.</li>
+        <li><code>unitId + address</code>: una dirección en <code>unitIds[unitId]</code> global.</li>
+        <li><code>unitId</code>: unitId global completo.</li>
+        <li><code>address</code>: una dirección del mapa global.</li>
+      </ul>
+
+    <h3>Excepciones Modbus</h3>
+    <ul>
+        <li><code>01</code>: Función code no soportada (solo FC1 y FC3).</li>
+        <li><code>02</code>: Dirección fuera de rango, registro/coil faltante o deshabilitado.</li>
+        <li><code>03</code>: Quantity inválida.</li>
+        <li><code>04</code>: Error al codificar el valor.</li>
+    </ul>
+
+    <h3>Puertos y permisos</h3>
+    <p>El puerto 502 es el estándar Modbus pero requiere permisos de root en Linux. Para desarrollo, usar puerto 1502 o superior es recomendado.</p>
+
+    <h3>Eventos emitidos</h3>
+    <p>Si "Emit events" está habilitado, el nodo emite mensajes de salida con topic <code>enron-modbus/&lt;event&gt;</code>:</p>
+    <ul>
+        <li><code>server_started</code>: Servidor escuchando.</li>
+        <li><code>server_error</code>: Error del servidor.</li>
+        <li><code>client_connected</code>: Cliente Modbus conectado.</li>
+        <li><code>client_disconnected</code>: Cliente desconectado.</li>
+        <li><code>request</code>: Lectura FC1/FC3 recibida.</li>
+        <li><code>response</code>: Respuesta enviada.</li>
+        <li><code>exception</code>: Excepción Modbus enviada.</li>
+      <li><code>config_updated</code>: Modelo actualizado (modo replace, setValue o deleteNode).</li>
+    </ul>
