@@ -17,6 +17,12 @@
     "type": "git",
     "url": "https://github.com/RobAxt/node-red-contrib-enron-modbus-server.git"
   },
+  "files": [
+    "nodes",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=18.0.0"
   },
