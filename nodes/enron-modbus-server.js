@@ -3,17 +3,12 @@
 const net = require("net");
 
 // Plantilla de modelo que se usa al crear el nodo si no se configuró ningún JSON válido
-// o si el JSON almacenado no puede parsearse. Proporciona un punto de partida coherente
-// con los defaults y un par de coils de ejemplo para que el nodo responda desde el primer deploy.
+// o si el JSON almacenado no puede parsearse. Proporciona un punto de partida coherente.
 const DEFAULT_JSON = {
   defaults: {
     type: "float32",
     byteOrder: "ABCD",
     missingRegister: "exception"
-  },
-  coils: {
-    "1000": { value: true },
-    "1001": { value: false }
   }
 };
 
@@ -1187,7 +1182,7 @@ module.exports = function register(RED) {
   // pueda consultar el estado en tiempo real del modelo en memoria sin necesidad
   // de redeployar el flujo. Requiere el permiso 'enron-modbus-server.read'.
   RED.httpAdmin.get("/enron-modbus-server/:id/model",
-    RED.auth.needsPermission("enron-modbus-server.read"),
+    RED.auth.needsPermission("flows.read"),
     function(req, res) {
       const node = RED.nodes.getNode(req.params.id);
       if (!node || !node.model) {

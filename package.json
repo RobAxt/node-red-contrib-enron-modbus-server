@@ -27,7 +27,7 @@
     "node": ">=18.0.0"
   },
   "node-red": {
-    "version": ">=3.1.0",
+    "version": ">=4.1.0",
     "nodes": {
       "enron-modbus-server": "nodes/enron-modbus-server.js"
     }
@@ -39,7 +39,7 @@
     "dev:nodered": "nodemon"
   },
   "devDependencies": {
-    "node-red": "^3.1.0",
+    "node-red": "^4.1.0",
     "nodemon": "^3.1.10"
   },
   "main": "nodes/enron-modbus-server.js",

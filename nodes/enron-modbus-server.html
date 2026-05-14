@@ -28,7 +28,7 @@
             missingRegister: { value: 'exception' },
             groupTimeoutMinutes: { value: 0, validate: RED.validators.number() },
             emitEvents: { value: true },
-            dataJson: { value: '{}', type: 'hidden' },
+            dataJson: { value: '{}' },
         },
         inputs: 1,
         outputs: 1,
@@ -54,7 +54,7 @@
 
             function fetchModel() {
                 $div.text('Cargando...');
-                $.getJSON('/enron-modbus-server/' + nodeId + '/model')
+                $.getJSON('enron-modbus-server/' + nodeId + '/model')
                     .done(function(data) {
                         $div.text(JSON.stringify(data, null, 2));
                     })
