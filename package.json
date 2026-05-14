@@ -1,6 +1,6 @@
 {
   "name": "@axt/node-red-contrib-enron-modbus-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Node-RED palette node that exposes an Enron/Daniels-style Modbus TCP server for FC3 numeric registers in the 7000 range.",
   "keywords": [
     "node-red",
